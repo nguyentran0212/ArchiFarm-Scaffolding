@@ -1,0 +1,89 @@
+# Metadata
+[metadata]
+title = "Blockchain Experiment Configuration"
+version = "1.0"
+description = "This form collects configuration data for blockchain experiments."
+timestamp = "2024-09-25T03:03:23Z"
+
+# Form
+
+[parameters]
+description = "Define the parameters for the experiment"
+
+[parameters.architecture]
+description = "Define the architecture decision parameters"
+
+[parameters.architecture.arch]
+type = "DYNAMIC_LIST"
+prompt = "How many architectures would you like to test?"
+description = "Number of different architectures to be tested."
+item_prompt = "Enter architecture[{index}]"
+example = "4"
+
+[parameters.architecture.blockchains]
+type = "DYNAMIC_LIST[DICT]"
+prompt = "How many types of blockchain would you like to test?"
+description = "Number of different types of blockchain to be tested."
+item_prompt = "Enter blockchain[{index}]"
+example = "3"
+
+[parameters.architecture.blockchains.items.name]
+type = "STRING"
+prompt = "Enter the name of the blockchain for the experiment"
+description = "The name of the blockchain to be tested e.g. Eth, Solana, etc."
+example = "Ethereum"
+
+[parameters.architecture.blockchains.items.architecture]
+type = "STRING"
+prompt = "Enter the name of the architecture for the blockchain"
+description = "The name of the architecture to be tested e.g. Geth_PoA"
+example = "Geth_PoA"
+
+[parameters.architecture.blockchains.items.configs]
+type = "KEY_VALUE"
+description = "Define the configurations for the blockchain"
+prompt = "Enter the configurations for the blockchain"
+
+[parameters.context]
+description = "Define the context parameters for the experiment"
+
+[parameters.context.in_cluster]
+description = "Define the in-cluster settings for the experiment"
+
+[parameters.context.in_cluster.bandwidth]
+type = "LIST"
+prompt = "Enter the bandwidth for each experiment"
+description = "The bandwidth for each experiment in Mbps"
+default = [10, 20, 30]
+example = "10,20,30"
+
+[parameters.context.in_cluster.latency]
+type = "LIST"
+prompt = "Enter the latency for each experiment"
+description = "The latency for each experiment in ms"
+default = [0, 100, 500, 1000]
+example = "0,100,500,1000"
+
+[parameters.context.cross_cluster]
+description = "Define the cross-cluster parameters for the experiment"
+
+[parameters.context.cross_cluster.bandwidth]
+type = "LIST"
+prompt = "Enter the cross-cluster bandwidth for each experiment"
+description = "The cross-cluster bandwidth for each experiment in Mbps"
+default = [10, 20, 30]
+example = "10,20,30"
+
+[parameters.context.cross_cluster.latency]
+type = "LIST"
+prompt = "Enter the cross-cluster latency for each experiment"
+description = "The cross-cluster latency for each experiment in ms"
+default = [100, 500, 1000]
+example = "100,500,1000"
+
+[parameters.context.tps_rate]
+type = "LIST"
+prompt = "Enter the TPS rate for each experiment"
+description = "The TPS rate for each experiment (transactions per second)"
+default = [1, 5, 10, 30]
+example = "1,5,10,30"

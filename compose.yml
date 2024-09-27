@@ -1,2 +1,40 @@
 # Add compose for the whole stack
 # Import other compose scripts that make up the stack
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - archifarm-network
+  # Context Controllers
+  context-controllers-api:
+    build: ./experiment-tools/context-parameter-controllers
+    ports:
+      - "8001:8001"
+    networks:
+      - archifarm-network
+
+  prototyping-tools-api:
+    build: ./experiment-tools/prototyping-tools
+    ports:
+      - "8002:8002"
+    environment:
+      - MONGODB_HOST=mongo
+    networks:
+      - archifarm-network
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
+
+networks:
+  archifarm-network:
+    name: archifarm-network
+    external: true

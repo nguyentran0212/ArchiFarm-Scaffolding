@@ -43,3 +43,22 @@ ArchiFarm is particularly useful in:
 - System configuration decisions.
 - Evaluating and comparing design options under varying contextual factors.
 
+# How to run the whole stack
+
+1. Run `start.sh` to start all the services in docker
+2. Go to `archifarm-core/experiment-management-cli` and follow the instructions in the README.md to run the experiment management cli
+3. Run `stop.sh` to stop all the services in docker
+
+# Services
+All services are dockerized and run in docker compose. You can find the docker compose file inside each service folder.
+
+# Docker Services
+Docker Containers and Port Mappings
+grafana                               3333->3000/tcp  3333->3000/tcp
+prometheus                            9090->9090/tcp  9090->9090/tcp
+cadvisor                              8080->8080/tcp  8080->8080/tcp
+workflow-engine-n8n-1                 5678->5678/tcp  5678->5678/tcp
+workflow-engine-postgres-1            5432/tcp
+archifarm-prototyping-tools-api-1     8002->8002/tcp  8002->8002/tcp
+archifarm-context-controllers-api-1   8001->8001/tcp  8001->8001/tcp
+mongo                                 27017->27017/tcp  27017->27017/tcp

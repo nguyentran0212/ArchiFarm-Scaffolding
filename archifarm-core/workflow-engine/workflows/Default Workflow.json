@@ -1,0 +1,866 @@
+{
+  "name": "default-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "66c6951a-22d7-49e5-95d9-75f05e948fd0",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1860,
+        1140
+      ],
+      "webhookId": "592e1649-c4a4-4177-a24b-465b5e569985"
+    },
+    {
+      "parameters": {
+        "url": "=http://prototyping-tools-api:8002/prototyping-tools/get-experiment-status/{{ $('Experiment Data').first().json.experiment_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "453d3302-d0aa-4476-870f-2178ae8ec241",
+      "name": "Check Experiment Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2120,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isNotEmpty() }}",
+              "value2": "={{ true }}"
+            }
+          ],
+          "string": [
+            {
+              "value1": "={{ $json.body.experiment_status }}",
+              "value2": "completed"
+            }
+          ]
+        }
+      },
+      "id": "9775d15c-5e82-4260-b877-865bdf916f78",
+      "name": "Is experiment finished",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.statusCode }}",
+              "operation": "notEqual",
+              "value2": "=200"
+            },
+            {
+              "value1": "={{ $json.statusCode }}",
+              "value2": "=201"
+            }
+          ]
+        }
+      },
+      "id": "695f18cf-b90e-43ca-a3b6-3cb55a63118f",
+      "name": "Is experiment failed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2660,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/sample_exp_input.csv"
+      },
+      "id": "68bf9629-f33f-471d-838f-edefd26c5704",
+      "name": "Read Binary Files",
+      "type": "n8n-nodes-base.readBinaryFiles",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        1420
+      ]
+    },
+    {
+      "parameters": {
+        "fileFormat": "csv",
+        "options": {
+          "readAsString": true
+        }
+      },
+      "id": "a4d44115-cf59-4f15-a571-8b05b7b892e7",
+      "name": "Spreadsheet File",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        -940,
+        1424
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "3bf1c10f-d8e3-42c8-895d-696525f218ae",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        1420
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "49fc7c9a-3e66-4f59-b442-61f7e1fbe019",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        140,
+        1664
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Reading experiment configs\n\n1. Load binary (CSV file) from local storage. Can be replace with downloading from a remote host or retrieving from a MongoDB later\n2. Read the binary as a CSV and return a JSON representation",
+        "height": 336.8250150330727,
+        "width": 453.44558027660855
+      },
+      "id": "ef4d6a56-71da-4277-8748-b464a038c97c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1240,
+        1244
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Running experiments\n\n1. Split the input experiment configs into rows\n2. Calls the workflow for executing 1 experiment and pass the input\n3. Loop until done",
+        "height": 694.4541519138953,
+        "width": 683.9186030818935
+      },
+      "id": "eee5105c-d04e-4a96-87c0-eae53d591f44",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Post-experiment tasks\n\nThe list of URLs for downloading the experiment results is returned.  More activities might be done with this list.",
+        "height": 375.53818400481146,
+        "width": 301.7318099819612
+      },
+      "id": "1a5ae951-9e17-4885-8e7c-7bf75e4675b2",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1444
+      ]
+    },
+    {
+      "parameters": {
+        "fileFormat": "csv",
+        "options": {
+          "readAsString": true
+        }
+      },
+      "id": "fcee5f97-2813-41e9-a23c-02bb1c0a4052",
+      "name": "Spreadsheet File1",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        -920,
+        1744
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "jsonToBinary",
+        "convertAllData": false,
+        "sourceKey": "body",
+        "options": {
+          "encoding": "utf8",
+          "mimeType": "=text/csv",
+          "useRawData": true
+        }
+      },
+      "id": "1acf816d-c922-4e46-9fa6-2708e6b07b56",
+      "name": "Move Binary Data",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "typeVersion": 1,
+      "position": [
+        -1140,
+        1740
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "=failed to run experiment {{ $('Split In Batches').last().json.expID }} at {{ $('Extract Experiment ID').last().json[\"data\"] }}"
+      },
+      "id": "3606ed3e-e8da-4398-9e84-1a98538a259a",
+      "name": "Stop everything",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        3020,
+        1320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Set all context parameters",
+        "height": 312.95733841759807,
+        "width": 355.3538297178859,
+        "color": 5
+      },
+      "id": "459f35c5-7508-4246-a723-47a54d0642d3",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Error Handling for Experiment Failed",
+        "height": 385.19373369209393,
+        "width": 508.93153272379016,
+        "color": 3
+      },
+      "id": "a14b0152-37aa-410c-9b71-6aa674e85ce0",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        1140
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "77e3c313-e8f5-4253-8857-f54d56a3624d",
+      "name": "Start the next experiment",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4120,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20,
+        "unit": "seconds"
+      },
+      "id": "ea34b620-5e27-4240-a646-c7e090da9b6a",
+      "name": "A waiting buffer 20s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        1420
+      ],
+      "webhookId": "6905e43a-05b7-4663-b647-f6571382436b"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"id\": {{ $execution.id }}\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "7e68063c-3346-4b20-a2aa-22f9e30ccc14",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1380,
+        1740
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://context-controllers-api:8001/context-controller/context/reset/{{$('Experiment Data').first().json.context_id }}",
+        "options": {}
+      },
+      "id": "00425a58-8ce6-46dc-8df0-1bedeb27f193",
+      "name": "Reset experiment environment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3480,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=http://prototyping-tools-api:8002/prototyping-tools/get-experiment-results/{{ $('Experiment Data').first().json.experiment_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/zip"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "b067a258-7dca-4119-ba05-7b3b2de6d928",
+      "name": "Download Experiment Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2920,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const architecture = JSON.parse($input.first().json[\"architecture\"] ?? null);\nconst context = JSON.parse($input.first().json[\"context\"] ?? null);\n\nreturn {\n  \"architecture\": architecture,\n  \"context\": context\n}\n"
+      },
+      "id": "75fa40fc-0f71-4a32-97ed-6237d6907327",
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://context-controllers-api:8001/context-controller/context/set",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "kwargs",
+              "value": "={{ $('Extract Data').first().json.context }}"
+            },
+            {
+              "name": "context",
+              "value": "all"
+            },
+            {
+              "name": "environment",
+              "value": "experiments"
+            },
+            {
+              "name": "op",
+              "value": "any"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a5227ebd-87c9-4554-9e83-09e587a0b2ef",
+      "name": "Set all context parameters",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        600,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Submit architecture parameters to the prototype tools api",
+        "height": 318.5602337615869,
+        "width": 714.2203581404017,
+        "color": 4
+      },
+      "id": "50aa9ab4-b72b-4acc-b3ee-55919f97246d",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        960,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://prototyping-tools-api:8002/prototyping-tools/run-experiment",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "toolID",
+              "value": "blockchain_tool"
+            },
+            {
+              "name": "op",
+              "value": "run_experiment"
+            },
+            {
+              "name": "kwargs",
+              "value": "={{ $('Extract Data').first().json.architecture }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "f18801a4-9b13-4fe7-8922-2aa04cf4b730",
+      "name": "Run Experiment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1080,
+        1140
+      ],
+      "alwaysOutputData": false,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "context_response = $('Set all context parameters').first().json\nexperiment_response = $('Run Experiment').first().json\n\nreturn {\n  \"context_id\": context_response.id,\n  \"experiment_id\": experiment_response.experiment_id\n}"
+      },
+      "id": "b318f9ea-2894-4346-bc3b-2362972280bc",
+      "name": "Experiment Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "experiments",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "218bbea6-a633-4fc6-b2f4-640d4d03b3a9",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1640,
+        1740
+      ],
+      "webhookId": "6dd0bfae-6385-4c7b-8a5f-6fae793fb7cf"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://prototyping-tools-api:8002/prototyping-tools/store-experiment-result",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "experiment_id",
+              "value": "={{ $('Experiment Data').first().json.experiment_id }}"
+            },
+            {
+              "name": "metadata",
+              "value": "={{ JSON.stringify($('Extract Data').first().json) }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "8324f463-0e69-4c3b-85df-3ad1904b8df6",
+      "name": "Store Experiment Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3180,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Wait and check for experiment status",
+        "height": 772.8490454363607,
+        "width": 1014.9162858679906,
+        "color": 4
+      },
+      "id": "40c8309b-8008-4fb9-8fa2-c46eaa80562b",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1800,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Download and store the result into Database",
+        "height": 287.63352328005567,
+        "width": 545.0224878387783
+      },
+      "id": "bf8c9519-6561-45ab-9f5d-a87e2dfb6367",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2862.6110354412767,
+        826.0007227241142
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Reset and start new round of experiment",
+        "height": 1142.1291452397502,
+        "width": 863.0246560111186,
+        "color": 6
+      },
+      "id": "6f266805-a61a-4545-b244-71ca298e47dd",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3440,
+        820
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check Experiment Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Experiment Status": {
+      "main": [
+        [
+          {
+            "node": "Is experiment finished",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is experiment finished": {
+      "main": [
+        [
+          {
+            "node": "Download Experiment Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is experiment failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is experiment failed": {
+      "main": [
+        [
+          {
+            "node": "Stop everything",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Binary Files": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Binary Data": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start the next experiment": {
+      "main": [
+        [
+          {
+            "node": "A waiting buffer 20s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A waiting buffer 20s": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Move Binary Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset experiment environment": {
+      "main": [
+        [
+          {
+            "node": "Start the next experiment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Experiment Result": {
+      "main": [
+        [
+          {
+            "node": "Store Experiment Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Set all context parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set all context parameters": {
+      "main": [
+        [
+          {
+            "node": "Run Experiment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Experiment": {
+      "main": [
+        [
+          {
+            "node": "Experiment Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Experiment Data": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Experiment Result": {
+      "main": [
+        [
+          {
+            "node": "Reset experiment environment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d0a4fefb-0349-4f65-9aad-f9456bb78a0a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "659c104346b02040680923a1d742aebf80fcaa4abf945f6dbcf63169940bf6cd"
+  },
+  "id": "zIJ29tql04df4BrJ",
+  "tags": []
+}

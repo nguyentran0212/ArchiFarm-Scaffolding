@@ -1,1 +1,28 @@
 # Add compose for starting and setting up Grafana here
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3333:3000"
+    networks:
+      - archifarm-network
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+volumes:
+  grafana_data:
+
+networks:
+  archifarm-network:
+    name: archifarm-network
+    external: true

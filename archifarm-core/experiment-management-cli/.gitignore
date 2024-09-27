@@ -1,0 +1,37 @@
+# Python-specific ignores
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.env
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Project-specific files (customize as needed)
+# config.ini
+# secrets.json
+
+.tmp
+outputs/
+output

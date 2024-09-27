@@ -1,0 +1,5 @@
+data_storage/**/*.zip
+data_storage/**/*.csv
+n8n_storage/*
+n8n_storage/**/*.log
+n8n_storage/n8nEventLog.log

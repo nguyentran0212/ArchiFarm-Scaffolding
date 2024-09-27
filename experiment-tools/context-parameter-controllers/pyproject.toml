@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "context-parameter-controller"
+version = "0.1.0"
+description = "Context Parameter Controller Tools for Architecture Farming experiments"
+authors = ["Your Name <your.email@example.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">3.9,<4.0"
+fastapi = "^0.112.0"
+uvicorn = "^0.30.5"
+gunicorn = "^22.0.0"
+pydantic = {extras = ["email"], version = "^2.8.2"}
+pydantic-settings = "^2.4.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = "context_parameter_controller.main:start"
