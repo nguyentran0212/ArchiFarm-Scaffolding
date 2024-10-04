@@ -67,7 +67,7 @@ if [[ "$(uname)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
     export GUM
 else
     # Use the existing GUM variable if not on macOS arm64
-    export GUM="${GUM:-gum}"
+    export GUM="$(pwd)/bin/gum"
 fi
 
 # Check if gum is available and working
